@@ -11,19 +11,20 @@ class ApiClient {
     required this.apiKey,
   });
 
-  Future<Either<FetchFailure, dynamic>> fetch(String path) async {
+  Future<Either<FetchFailure, dynamic>> fetch(String path,
+      [Map<String, dynamic> params = const {}]) async {
     try {
       var headers = {'Authorization': 'Bearer $apiKey'};
       var dio = Dio();
       var url = '$baseUrl$path';
-      var response = await dio.request(url,
-          options: Options(
-            method: 'GET',
-            headers: headers,
-          ),
-          queryParameters: {
-            'language': 'pt-BR',
-          });
+      var response = await dio.request(
+        url,
+        options: Options(
+          method: 'GET',
+          headers: headers,
+        ),
+        queryParameters: params,
+      );
 
       if (response.statusCode == 200) {
         return Right(response.data);

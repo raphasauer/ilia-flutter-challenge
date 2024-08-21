@@ -8,8 +8,10 @@ class MovieService {
 
   MovieService({required this.client});
 
-  Future<Either<FetchFailure, List<MovieModel>>> fetchPlayingMovies() async {
-    final result = await client.fetch('/movie/now_playing');
+  Future<Either<FetchFailure, List<MovieModel>>> fetchPlayingMovies(
+      [int page = 1]) async {
+    final result = await client
+        .fetch('/movie/now_playing', {'language': 'pt-BR', 'page': page});
 
     return result.fold(
       (failure) => Left(failure),
