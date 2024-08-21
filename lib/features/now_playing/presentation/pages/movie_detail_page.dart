@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:ilia_flutter_challenge/features/now_playing/models/movie_model.dart';
+import 'package:ilia_flutter_challenge/features/now_playing/data/models/movie_model.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:ilia_flutter_challenge/features/now_playing/api/movie_service.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:ilia_flutter_challenge/common/entities/failures.dart';
 
 import '../../api/api_client.dart';
-import '../../models/movie_detail_model.dart';
+import '../../data/models/movie_detail_model.dart';
 
 class MovieDetailPage extends StatefulWidget {
   const MovieDetailPage({super.key, required this.movie});
@@ -98,7 +98,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10.0),
                 child: Image.network(
-                  'https://image.tmdb.org/t/p/w500${widget.movie.posterPath}', // Use a larger size for detail view
+                  'https://image.tmdb.org/t/p/w500${widget.movie.posterPath}',
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return const Icon(Icons.image_not_supported, size: 200);

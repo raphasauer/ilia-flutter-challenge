@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ilia_flutter_challenge/features/now_playing/models/movie_model.dart';
+import 'package:ilia_flutter_challenge/features/now_playing/data/models/movie_model.dart';
 import 'package:ilia_flutter_challenge/features/now_playing/presentation/pages/movie_detail_page.dart';
 
 class MovieTile extends StatelessWidget {

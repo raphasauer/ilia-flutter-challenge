@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:ilia_flutter_challenge/common/entities/failures.dart';
 import 'package:ilia_flutter_challenge/features/now_playing/api/api_client.dart';
-import 'package:ilia_flutter_challenge/features/now_playing/models/movie_detail_model.dart';
-import 'package:ilia_flutter_challenge/features/now_playing/models/movie_model.dart';
+import 'package:ilia_flutter_challenge/features/now_playing/data/models/movie_detail_model.dart';
+import 'package:ilia_flutter_challenge/features/now_playing/data/models/movie_model.dart';
 
 class MovieService {
   final ApiClient client;
