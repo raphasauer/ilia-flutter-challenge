@@ -16,6 +16,7 @@ dependencies:
   dio: ^5.6.0
   flutter_dotenv: ^5.1.0
   dartz: ^0.10.1
+  youtube_player_flutter: 9.0.0
 
 dev_dependencies:
   flutter_test:
