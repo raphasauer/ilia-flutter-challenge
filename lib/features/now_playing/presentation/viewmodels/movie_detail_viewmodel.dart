@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:ilia_flutter_challenge/features/now_playing/api/movie_service.dart';
 
+import '../../data/models/cached_movie_detail.dart';
 import '../../data/models/movie_detail_model.dart';
 import '../../providers/movie_service_provider.dart';
 
@@ -39,12 +40,14 @@ class MovieDetailViewModel extends StateNotifier<MovieDetailState> {
       : super(MovieDetailState(isLoading: true));
 
   Future<void> loadMovieDetail(String movieId) async {
-    state = state.copyWith(isLoading: true, errorMessage: null);
+    const cacheDuration = Duration(hours: 24);
 
-    final cachedMovie = box.get(movieId);
-    if (cachedMovie != null) {
-      log('[loadMovieDetail] Cache hit, using stored information...');
-      state = state.copyWith(isLoading: false, movieDetail: cachedMovie);
+    final cachedData = box.get(movieId);
+    if (cachedData != null &&
+        DateTime.now().difference(cachedData.timestamp) < cacheDuration) {
+          log('[loadMovieDetail] Cached timestamp within tolerance, using cached information');
+      state =
+          state.copyWith(isLoading: false, movieDetail: cachedData.movieDetail);
       return;
     }
 
@@ -56,8 +59,13 @@ class MovieDetailViewModel extends StateNotifier<MovieDetailState> {
         errorMessage: 'Erro ao carregar detalhes do filme',
       ),
       (movieDetail) {
-        log('[loadMovieDetail] Caching movie details...');
-        box.put(movieId, movieDetail);
+        final cachedMovieDetail = CachedMovieDetail(
+          movieDetail: movieDetail,
+          timestamp: DateTime.now(),
+        );
+        log('[loadMovieDetail] Caching data...');
+        box.put(movieId, cachedMovieDetail);
+
         state = state.copyWith(
           isLoading: false,
           movieDetail: movieDetail,

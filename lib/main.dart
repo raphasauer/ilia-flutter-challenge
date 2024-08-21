@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
 
+import 'features/now_playing/data/models/cached_movie_detail.dart';
 import 'features/now_playing/data/models/genre_model.dart';
 import 'features/now_playing/data/models/movie_detail_model.dart';
 import 'features/now_playing/data/models/video_model.dart';
@@ -15,6 +16,7 @@ void main() async {
   Hive.registerAdapter(GenreAdapter());
   Hive.registerAdapter(VideoAdapter());
   Hive.registerAdapter(MovieDetailAdapter());
+  Hive.registerAdapter(CachedMovieDetailAdapter());
   await Hive.openBox('movieDetails');
 
   runApp(const ProviderScope(child: MyIliaApp()));
