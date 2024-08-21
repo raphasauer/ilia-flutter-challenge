@@ -1,16 +1,48 @@
+import 'package:hive/hive.dart';
+import 'package:ilia_flutter_challenge/features/now_playing/data/models/video_model.dart';
+import 'genre_model.dart';
+
+part 'movie_detail_model.g.dart'; 
+
+@HiveType(typeId: 2)
 class MovieDetail {
+  @HiveField(0)
   final int id;
+
+  @HiveField(1)
   final String title;
+
+  @HiveField(2)
   final String overview;
+
+  @HiveField(3)
   final String posterPath;
+
+  @HiveField(4)
   final String backdropPath;
+
+  @HiveField(5)
   final String releaseDate;
+
+  @HiveField(6)
   final int runtime;
+
+  @HiveField(7)
   final int budget;
+
+  @HiveField(8)
   final List<Genre> genres;
+
+  @HiveField(9)
   final String homepage;
+
+  @HiveField(10)
   final String originalLanguage;
+
+  @HiveField(11)
   final double voteAverage;
+
+  @HiveField(12)
   final List<Video> videos;
 
   MovieDetail({
@@ -50,59 +82,22 @@ class MovieDetail {
           .toList(),
     );
   }
-}
 
-class Genre {
-  final int id;
-  final String name;
-
-  Genre({required this.id, required this.name});
-
-  factory Genre.fromJson(Map<String, dynamic> json) {
-    return Genre(
-      id: json['id'],
-      name: json['name'],
-    );
-  }
-}
-
-class Video {
-  final String iso6391;
-  final String iso31661;
-  final String name;
-  final String key;
-  final String site;
-  final int size;
-  final String type;
-  final bool official;
-  final String publishedAt;
-  final String id;
-
-  Video({
-    required this.iso6391,
-    required this.iso31661,
-    required this.name,
-    required this.key,
-    required this.site,
-    required this.size,
-    required this.type,
-    required this.official,
-    required this.publishedAt,
-    required this.id,
-  });
-
-  factory Video.fromJson(Map<String, dynamic> json) {
-    return Video(
-      iso6391: json['iso_639_1'],
-      iso31661: json['iso_3166_1'],
-      name: json['name'],
-      key: json['key'],
-      site: json['site'],
-      size: json['size'],
-      type: json['type'],
-      official: json['official'],
-      publishedAt: json['published_at'],
-      id: json['id'],
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'overview': overview,
+      'poster_path': posterPath,
+      'backdrop_path': backdropPath,
+      'release_date': releaseDate,
+      'runtime': runtime,
+      'budget': budget,
+      'genres': genres.map((genre) => genre.toJson()).toList(),
+      'homepage': homepage,
+      'original_language': originalLanguage,
+      'vote_average': voteAverage,
+      'videos': videos.map((video) => video.toJson()).toList(),
+    };
   }
 }

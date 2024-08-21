@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart';
 import 'package:ilia_flutter_challenge/features/now_playing/api/movie_service.dart';
 
 import '../../data/models/movie_detail_model.dart';
@@ -30,12 +33,21 @@ class MovieDetailState {
 
 class MovieDetailViewModel extends StateNotifier<MovieDetailState> {
   final MovieService movieService;
+  final Box box = Hive.box('movieDetails');
 
   MovieDetailViewModel(this.movieService)
       : super(MovieDetailState(isLoading: true));
 
   Future<void> loadMovieDetail(String movieId) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
+
+    final cachedMovie = box.get(movieId);
+    if (cachedMovie != null) {
+      log('[loadMovieDetail] Cache hit, using stored information...');
+      state = state.copyWith(isLoading: false, movieDetail: cachedMovie);
+      return;
+    }
+
     final result = await movieService.fetchMovieDetail(movieId);
 
     result.fold(
@@ -43,10 +55,14 @@ class MovieDetailViewModel extends StateNotifier<MovieDetailState> {
         isLoading: false,
         errorMessage: 'Erro ao carregar detalhes do filme',
       ),
-      (movieDetail) => state = state.copyWith(
-        isLoading: false,
-        movieDetail: movieDetail,
-      ),
+      (movieDetail) {
+        log('[loadMovieDetail] Caching movie details...');
+        box.put(movieId, movieDetail);
+        state = state.copyWith(
+          isLoading: false,
+          movieDetail: movieDetail,
+        );
+      },
     );
   }
 }
