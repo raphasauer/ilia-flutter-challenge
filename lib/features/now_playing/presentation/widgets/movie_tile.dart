@@ -52,7 +52,7 @@ class MovieTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 8.0),
                     Text(
-                      movie.overview,
+                      movie.overview.isEmpty ? 'Sinopse não disponível' : movie.overview,
                       style: Theme.of(context).textTheme.bodyMedium,
                       maxLines: 4,
                       overflow: TextOverflow.ellipsis,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ilia_flutter_challenge/features/now_playing/api/movie_service.dart';
 import 'package:ilia_flutter_challenge/features/now_playing/presentation/widgets/movie_tile.dart';
+import 'package:ilia_flutter_challenge/features/now_playing/presentation/widgets/search_box.dart';
 
 import '../../api/api_client.dart';
 import '../../models/movie_model.dart';
@@ -21,6 +22,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late MovieService movieService;
   List<MovieModel> movies = [];
+  List<MovieModel> filteredMovies = [];
   int currentPage = 1;
   bool isLoadingMore = false;
   bool hasMoreMovies = true;
@@ -28,6 +30,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String? initialLoadError;
   String? loadMoreError;
   final ScrollController _scrollController = ScrollController();
+  String sortBy = 'rating';
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -35,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _loadInitialMovies();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent - 200) {
+          _scrollController.position.maxScrollExtent - 200 && _searchQuery.isEmpty) {
         _loadMoreMovies();
       }
     });
@@ -60,6 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
       (r) {
         setState(() {
           movies = r;
+          filteredMovies = movies;
+          _applySearchAndSort('');
           currentPage++;
           isLoadingInitial = false;
         });
@@ -87,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
       (r) {
         setState(() {
           movies.addAll(r);
+          _applySearchAndSort('');
           isLoadingMore = false;
           currentPage++;
           if (r.isEmpty) {
@@ -95,6 +102,22 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       },
     );
+  }
+
+  void _applySearchAndSort(String searchValue) {
+    var newFilteredMovies = movies.where((movie) {
+      return movie.title.toLowerCase().contains(searchValue.toLowerCase());
+    }).toList();
+
+    if (sortBy == 'rating') {
+      filteredMovies.sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
+    } else if (sortBy == 'title') {
+      filteredMovies.sort((a, b) => a.title.compareTo(b.title));
+    }
+
+    setState(() {
+      filteredMovies = newFilteredMovies;
+    });
   }
 
   @override
@@ -109,47 +132,69 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: isLoadingInitial
-          ? const Center(child: CircularProgressIndicator())
-          : initialLoadError != null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(initialLoadError!),
-                      const SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: _loadInitialMovies,
-                        child: const Text('Tentar novamente'),
-                      ),
-                    ],
-                  ),
-                )
-              : ListView.builder(
-                  controller: _scrollController,
-                  itemCount: movies.length + (isLoadingMore ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index == movies.length) {
-                      if (loadMoreError != null) {
-                        return Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            children: [
-                              Text(loadMoreError!),
-                              const SizedBox(height: 8),
-                              ElevatedButton(
-                                onPressed: _loadMoreMovies,
-                                child: const Text('Tentar novamente'),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    return MovieTile(movie: movies[index]);
-                  },
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: SearchBox(
+                      onChanged: (value) {
+                        _searchQuery = value;
+                        _applySearchAndSort(_searchQuery);
+                      },),
                 ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: isLoadingInitial
+                ? const Center(child: CircularProgressIndicator())
+                : initialLoadError != null
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(initialLoadError!),
+                            const SizedBox(height: 8),
+                            ElevatedButton(
+                              onPressed: _loadInitialMovies,
+                              child: const Text('Tentar novamente'),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        controller: _scrollController,
+                        itemCount:
+                            filteredMovies.length + (isLoadingMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index == movies.length) {
+                            if (loadMoreError != null) {
+                              return Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  children: [
+                                    Text(loadMoreError!),
+                                    const SizedBox(height: 8),
+                                    ElevatedButton(
+                                      onPressed: _loadMoreMovies,
+                                      child: const Text('Tentar novamente'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          return MovieTile(movie: filteredMovies[index]);
+                        },
+                      ),
+          ),
+        ],
+      ),
     );
   }
 }
