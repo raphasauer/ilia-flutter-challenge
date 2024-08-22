@@ -20,18 +20,11 @@ class _MovieDetailPageState extends ConsumerState<MovieDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    /*
-      This workaround addresses a specific app state scenario:
-      Providers, by default, retain their state in memory, which enables quick viewmodel access. 
-      However, when a fetch for details fails, and the user navigates back and then reopens the details 
-      (this time with an active connection), the widget may still display the previous error state. 
-      Using `invalidate` ensures the provider fetches fresh data, either from cache or the API, resolving the issue.
-     */
-    ref.invalidate(movieDetailViewModelProvider(widget.movie.id.toString()));
     final state =
         ref.watch(movieDetailViewModelProvider(widget.movie.id.toString()));
     final viewModel = ref.read(
         movieDetailViewModelProvider(widget.movie.id.toString()).notifier);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.movie.title),
