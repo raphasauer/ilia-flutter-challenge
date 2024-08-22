@@ -1,9 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.ilia_flutter_challenge">
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="ilia_flutter_challenge"
+        android:label="Filmes Ília"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"
