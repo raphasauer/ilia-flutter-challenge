@@ -6,7 +6,8 @@ class CacheService {
 
   CacheService({
     required this.cacheName,
-  }) : _box = Hive.box(cacheName);
+    Box? box,
+  }) : _box = box ?? Hive.box(cacheName);
 
   dynamic getCachedData(String key) {
     return _box.get(key);
