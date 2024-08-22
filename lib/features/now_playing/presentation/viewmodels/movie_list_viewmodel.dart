@@ -11,7 +11,7 @@ class MovieListState {
   final List<MovieModel> filteredMovies;
   final String? errorMessage;
   final String searchQuery;
-  final int currentPage;
+  final int nextPage;
   final bool hasMoreMovies;
 
   MovieListState({
@@ -21,7 +21,7 @@ class MovieListState {
     required this.filteredMovies,
     this.errorMessage,
     this.searchQuery = '',
-    this.currentPage = 1,
+    this.nextPage = 1,
     this.hasMoreMovies = true,
   });
 
@@ -32,7 +32,7 @@ class MovieListState {
     List<MovieModel>? filteredMovies,
     String? errorMessage,
     String? searchQuery,
-    int? currentPage,
+    int? nextPage,
     bool? hasMoreMovies,
   }) {
     return MovieListState(
@@ -42,7 +42,7 @@ class MovieListState {
       filteredMovies: filteredMovies ?? this.filteredMovies,
       errorMessage: errorMessage ?? this.errorMessage,
       searchQuery: searchQuery ?? this.searchQuery,
-      currentPage: currentPage ?? this.currentPage,
+      nextPage: nextPage ?? this.nextPage,
       hasMoreMovies: hasMoreMovies ?? this.hasMoreMovies,
     );
   }
@@ -63,7 +63,7 @@ class MovieListViewModel extends StateNotifier<MovieListState> {
 
   Future<void> loadMovies() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
-    final result = await movieService.fetchPlayingMovies(state.currentPage);
+    final result = await movieService.fetchPlayingMovies(state.nextPage);
 
     result.fold(
       (failure) => state = state.copyWith(
@@ -74,7 +74,7 @@ class MovieListViewModel extends StateNotifier<MovieListState> {
         isLoading: false,
         movies: movies,
         filteredMovies: _applySearch(movies, state.searchQuery),
-        currentPage: state.currentPage + 1,
+        nextPage: state.nextPage + 1,
       ),
     );
   }
@@ -83,7 +83,7 @@ class MovieListViewModel extends StateNotifier<MovieListState> {
     if (!state.hasMoreMovies || state.isLoadingMore) return;
 
     state = state.copyWith(isLoadingMore: true, errorMessage: null);
-    final result = await movieService.fetchPlayingMovies(state.currentPage);
+    final result = await movieService.fetchPlayingMovies(state.nextPage);
 
     result.fold(
       (failure) => state = state.copyWith(
@@ -96,7 +96,7 @@ class MovieListViewModel extends StateNotifier<MovieListState> {
           isLoadingMore: false,
           movies: allMovies,
           filteredMovies: _applySearch(allMovies, state.searchQuery),
-          currentPage: state.currentPage + 1,
+          nextPage: state.nextPage + 1,
           hasMoreMovies: movies.isNotEmpty,
         );
       },
