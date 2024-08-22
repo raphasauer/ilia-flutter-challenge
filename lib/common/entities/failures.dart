@@ -29,7 +29,7 @@ class FetchFailure extends Failure {
 
   factory FetchFailure.parsingError(String message) {
     return FetchFailure(
-      message: message,
+      message: 'Erro ao realizar o parse: $message',
     );
   }
 }
