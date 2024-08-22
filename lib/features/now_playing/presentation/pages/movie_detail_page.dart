@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ilia_flutter_challenge/common/utils/formatting_utils.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../../data/models/movie_model.dart';
@@ -104,7 +105,7 @@ class _MovieDetailPageState extends ConsumerState<MovieDetailPage> {
               ),
               const SizedBox(height: 8.0),
               Text(
-                'Orçamento: \$${state.movieDetail?.budget ?? '-'}',
+                'Orçamento: ${FormatUtils.formatCurrency(state.movieDetail?.budget ?? 0)}',
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: 8.0),
