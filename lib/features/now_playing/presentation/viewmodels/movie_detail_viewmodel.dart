@@ -1,8 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive/hive.dart';
+import 'package:ilia_flutter_challenge/features/now_playing/api/cache_service.dart';
 import 'package:ilia_flutter_challenge/features/now_playing/api/movie_service.dart';
+import 'package:ilia_flutter_challenge/features/now_playing/providers/cache_service_provider.dart';
 
 import '../../data/models/cached_movie_detail.dart';
 import '../../data/models/movie_detail_model.dart';
@@ -34,18 +35,18 @@ class MovieDetailState {
 
 class MovieDetailViewModel extends StateNotifier<MovieDetailState> {
   final MovieService movieService;
-  final Box box = Hive.box('movieDetails');
+  final CacheService cacheService;
 
-  MovieDetailViewModel(this.movieService)
+  MovieDetailViewModel(this.movieService, this.cacheService)
       : super(MovieDetailState(isLoading: true));
 
   Future<void> loadMovieDetail(String movieId) async {
     const cacheDuration = Duration(hours: 24);
 
-    final cachedData = box.get(movieId);
+    final cachedData = cacheService.getCachedData(movieId);
     if (cachedData != null &&
         DateTime.now().difference(cachedData.timestamp) < cacheDuration) {
-          log('[loadMovieDetail] Cached timestamp within tolerance, using cached information');
+      log('[loadMovieDetail] Cached timestamp within tolerance, using cached information');
       state =
           state.copyWith(isLoading: false, movieDetail: cachedData.movieDetail);
       return;
@@ -64,7 +65,7 @@ class MovieDetailViewModel extends StateNotifier<MovieDetailState> {
           timestamp: DateTime.now(),
         );
         log('[loadMovieDetail] Caching data...');
-        box.put(movieId, cachedMovieDetail);
+        cacheService.putCachedData(movieId, cachedMovieDetail);
 
         state = state.copyWith(
           isLoading: false,
@@ -78,5 +79,7 @@ class MovieDetailViewModel extends StateNotifier<MovieDetailState> {
 final movieDetailViewModelProvider = StateNotifierProvider.family<
     MovieDetailViewModel, MovieDetailState, String>((ref, movieId) {
   final movieService = ref.watch(movieServiceProvider);
-  return MovieDetailViewModel(movieService)..loadMovieDetail(movieId);
+  final cacheService = ref.watch(cacheServiceProvider);
+  return MovieDetailViewModel(movieService, cacheService)
+    ..loadMovieDetail(movieId);
 });

@@ -66,13 +66,13 @@ class MovieDetailPage extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8.0),
                       Text(
-                        'Release Date: ${movie.releaseDate}',
+                        'Data de lançamento: ${movie.releaseDate}',
                         style: Theme.of(context).textTheme.titleMedium,
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16.0),
                       Text(
-                        'Overview',
+                        'Sinopse',
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge
@@ -81,19 +81,19 @@ class MovieDetailPage extends ConsumerWidget {
                       const SizedBox(height: 8.0),
                       Text(
                         movie.overview.isEmpty
-                            ? 'Overview not available'
+                            ? 'Sinopse não disponível'
                             : movie.overview,
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       const SizedBox(height: 16.0),
                       Text(
-                        'Rating: ${movie.voteAverage}/10',
+                        'Avaliações: ${movie.voteAverage}/10',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       if (state.movieDetail != null) ...[
                         const SizedBox(height: 16.0),
                         Text(
-                          'Additional Details',
+                          'Detalhes adicionais',
                           style: Theme.of(context)
                               .textTheme
                               .titleLarge
@@ -101,23 +101,23 @@ class MovieDetailPage extends ConsumerWidget {
                         ),
                         const SizedBox(height: 8.0),
                         Text(
-                          'Runtime: ${state.movieDetail?.runtime ?? '-'} min',
+                          'Duração: ${state.movieDetail?.runtime ?? '-'} min',
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         const SizedBox(height: 8.0),
                         Text(
-                          'Budget: \$${state.movieDetail?.budget ?? '-'}',
+                          'Orçamento: \$${state.movieDetail?.budget ?? '-'}',
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         const SizedBox(height: 8.0),
                         Text(
-                          'Genres: ${state.movieDetail?.genres.map((g) => g.name).join(', ') ?? '-'}',
+                          'Gêneros: ${state.movieDetail?.genres.map((g) => g.name).join(', ') ?? '-'}',
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         if (state.movieDetail!.videos.isNotEmpty) ...[
                           const SizedBox(height: 16.0),
                           Text(
-                            'Videos',
+                            'Vídeos',
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge
