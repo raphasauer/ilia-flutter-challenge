@@ -23,12 +23,12 @@ class MovieDetailState {
   MovieDetailState copyWith({
     bool? isLoading,
     MovieDetail? movieDetail,
-    String? errorMessage,
+    required String? errorMessage,
   }) {
     return MovieDetailState(
       isLoading: isLoading ?? this.isLoading,
       movieDetail: movieDetail ?? this.movieDetail,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: errorMessage,
     );
   }
 }
@@ -38,7 +38,7 @@ class MovieDetailViewModel extends StateNotifier<MovieDetailState> {
   final CacheService cacheService;
 
   MovieDetailViewModel(this.movieService, this.cacheService)
-      : super(MovieDetailState(isLoading: true));
+      : super(MovieDetailState(isLoading: true, errorMessage: null));
 
   Future<void> loadMovieDetail(String movieId) async {
     const cacheDuration = Duration(hours: 24);
@@ -47,8 +47,11 @@ class MovieDetailViewModel extends StateNotifier<MovieDetailState> {
     if (cachedData != null &&
         DateTime.now().difference(cachedData.timestamp) < cacheDuration) {
       log('[loadMovieDetail] Cached timestamp within tolerance, using cached information');
-      state =
-          state.copyWith(isLoading: false, movieDetail: cachedData.movieDetail);
+      state = state.copyWith(
+        isLoading: false,
+        movieDetail: cachedData.movieDetail,
+        errorMessage: null, 
+      );
       return;
     }
 
@@ -70,6 +73,7 @@ class MovieDetailViewModel extends StateNotifier<MovieDetailState> {
         state = state.copyWith(
           isLoading: false,
           movieDetail: movieDetail,
+          errorMessage: null, 
         );
       },
     );
