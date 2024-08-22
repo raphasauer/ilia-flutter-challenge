@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ilia_flutter_challenge/features/now_playing/presentation/widgets/movie_tile.dart';
+import 'package:ilia_flutter_challenge/features/now_playing/presentation/widgets/movie_list_view.dart';
 import 'package:ilia_flutter_challenge/features/now_playing/presentation/widgets/search_box.dart';
 
 import '../viewmodels/movie_list_viewmodel.dart';
+import '../widgets/error_section.dart';
 
 class MovieListPage extends ConsumerStatefulWidget {
   const MovieListPage({super.key, required this.title});
@@ -43,51 +44,30 @@ class _MovieListPageState extends ConsumerState<MovieListPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        centerTitle: true,
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
+          state.errorMessage != null
+              ? const SizedBox()
+              : Padding(
+                  padding: const EdgeInsets.all(8.0),
                   child: SearchBox(
-                    onChanged: (value) {
-                      viewModel.updateSearchQuery(value);
-                    },
+                    onChanged: (value) => viewModel.updateSearchQuery(value),
                   ),
                 ),
-              ],
-            ),
-          ),
           Expanded(
             child: state.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : state.errorMessage != null
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(state.errorMessage!),
-                            const SizedBox(height: 8),
-                            ElevatedButton(
-                              onPressed: () => viewModel.loadMovies(),
-                              child: const Text('Tentar novamente'),
-                            ),
-                          ],
-                        ),
+                    ? ErrorSection(
+                        errorMessage: state.errorMessage!,
+                        onRetry: viewModel.loadMovies,
                       )
-                    : ListView.builder(
-                        controller: _scrollController,
-                        itemCount: state.filteredMovies.length +
-                            (state.isLoadingMore ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index == state.filteredMovies.length) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-                          return MovieTile(movie: state.filteredMovies[index]);
-                        },
+                    : MovieListView(
+                        scrollController: _scrollController,
+                        movies: state.filteredMovies,
+                        isLoadingMore: state.isLoadingMore,
                       ),
           ),
         ],

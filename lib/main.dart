@@ -30,7 +30,7 @@ class MyIliaApp extends StatelessWidget {
     return MaterialApp(
       title: 'Filmes Ília',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.purple,
       ),
       home: const MovieListPage(title: 'Filmes Ília'),
     );

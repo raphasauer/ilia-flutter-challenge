@@ -30,7 +30,7 @@ class MovieListState {
     bool? isLoadingMore,
     List<MovieModel>? movies,
     List<MovieModel>? filteredMovies,
-    String? errorMessage,
+    required String? errorMessage, // Explicitly required, can be null
     String? searchQuery,
     int? nextPage,
     bool? hasMoreMovies,
@@ -40,7 +40,7 @@ class MovieListState {
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       movies: movies ?? this.movies,
       filteredMovies: filteredMovies ?? this.filteredMovies,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: errorMessage,
       searchQuery: searchQuery ?? this.searchQuery,
       nextPage: nextPage ?? this.nextPage,
       hasMoreMovies: hasMoreMovies ?? this.hasMoreMovies,
@@ -71,6 +71,7 @@ class MovieListViewModel extends StateNotifier<MovieListState> {
         errorMessage: "Falha ao carregar filmes.",
       ),
       (movies) => state = state.copyWith(
+        errorMessage: null,
         isLoading: false,
         movies: movies,
         filteredMovies: _applySearch(movies, state.searchQuery),
@@ -93,6 +94,7 @@ class MovieListViewModel extends StateNotifier<MovieListState> {
       (movies) {
         final allMovies = List<MovieModel>.from(state.movies)..addAll(movies);
         state = state.copyWith(
+          errorMessage: null,
           isLoadingMore: false,
           movies: allMovies,
           filteredMovies: _applySearch(allMovies, state.searchQuery),
@@ -105,6 +107,7 @@ class MovieListViewModel extends StateNotifier<MovieListState> {
 
   void updateSearchQuery(String query) {
     state = state.copyWith(
+      errorMessage: null,
       searchQuery: query,
       filteredMovies: _applySearch(state.movies, query),
     );
@@ -112,6 +115,7 @@ class MovieListViewModel extends StateNotifier<MovieListState> {
 
   void updateSortBy(String sortBy) {
     state = state.copyWith(
+      errorMessage: null,
       filteredMovies: _applySearch(state.movies, state.searchQuery),
     );
   }
