@@ -11,14 +11,19 @@ import 'package:mockito/mockito.dart';
 import 'movie_list_viewmodel_test.mocks.dart';
 
 void main() {
-  var mockMovieService = MockMovieService();
+  late MockMovieService mockMovieService;
+
+  setUp(() => mockMovieService = MockMovieService());
 
   test('Should initialize a MovieListViewModel correctly', () {
     when(mockMovieService.fetchPlayingMovies()).thenAnswer(
       (_) async => const Right([]),
     );
     var viewModel = MovieListViewModel(mockMovieService);
+
     expect(viewModel.state.isLoading, true);
+
+    verify(mockMovieService.fetchPlayingMovies(1)).called(1);
   });
 
   test('Should load movies successfully and update the state', () async {
@@ -64,9 +69,11 @@ void main() {
     expect(viewModel.state.filteredMovies, mockMovies);
     expect(viewModel.state.errorMessage, null);
     expect(viewModel.state.nextPage, 3);
+    verify(mockMovieService.fetchPlayingMovies(1)).called(2);
   });
 
   test('Should handle error when loading movies', () async {
+    mockMovieService = MockMovieService();
     when(mockMovieService.fetchPlayingMovies(any)).thenAnswer(
       (_) async => const Left(FetchFailure(message: 'Erro ao carregar filmes')),
     );
@@ -79,6 +86,7 @@ void main() {
     expect(viewModel.state.movies.isEmpty, true);
     expect(viewModel.state.filteredMovies.isEmpty, true);
     expect(viewModel.state.errorMessage, 'Falha ao carregar filmes.');
+    verify(mockMovieService.fetchPlayingMovies(1)).called(2);
   });
 
   test('Should load more movies and update the state', () async {
@@ -120,6 +128,8 @@ void main() {
 
     var viewModel = MovieListViewModel(mockMovieService);
 
+    await viewModel.loadMovies();
+
     when(mockMovieService.fetchPlayingMovies(any)).thenAnswer(
       (_) async => Right(additionalMovies),
     );
@@ -129,7 +139,7 @@ void main() {
     expect(viewModel.state.isLoadingMore, false);
     expect(viewModel.state.movies.length, 2);
     expect(viewModel.state.movies, [...initialMovies, ...additionalMovies]);
-    expect(viewModel.state.nextPage, 3);
+    expect(viewModel.state.nextPage, 4);
   });
 
   test('Should update search query and filter movies', () async {
@@ -175,5 +185,7 @@ void main() {
     expect(viewModel.state.filteredMovies.length, 1);
     expect(viewModel.state.filteredMovies.first.title,
         'Guerra Nas Estrelas Episódio V: O Império Contra-Ataca');
+
+    verify(mockMovieService.fetchPlayingMovies(1)).called(2);
   });
 }
