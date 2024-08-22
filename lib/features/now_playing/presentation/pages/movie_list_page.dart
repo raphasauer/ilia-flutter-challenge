@@ -4,7 +4,6 @@ import 'package:ilia_flutter_challenge/features/now_playing/presentation/widgets
 import 'package:ilia_flutter_challenge/features/now_playing/presentation/widgets/search_box.dart';
 
 import '../viewmodels/movie_list_viewmodel.dart';
-import '../widgets/error_section.dart';
 
 class MovieListPage extends ConsumerStatefulWidget {
   const MovieListPage({super.key, required this.title});
@@ -48,27 +47,21 @@ class _MovieListPageState extends ConsumerState<MovieListPage> {
       ),
       body: Column(
         children: [
-          state.errorMessage != null
-              ? const SizedBox()
-              : Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SearchBox(
-                    onChanged: (value) => viewModel.updateSearchQuery(value),
-                  ),
-                ),
+          if (state.errorMessage == null)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SearchBox(
+                onChanged: (value) => viewModel.updateSearchQuery(value),
+              ),
+            ),
           Expanded(
-            child: state.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : state.errorMessage != null
-                    ? ErrorSection(
-                        errorMessage: state.errorMessage!,
-                        onRetry: viewModel.loadMovies,
-                      )
-                    : MovieListView(
-                        scrollController: _scrollController,
-                        movies: state.filteredMovies,
-                        isLoadingMore: state.isLoadingMore,
-                      ),
+            child: MovieListView(
+              scrollController: _scrollController,
+              movies: state.filteredMovies,
+              isLoadingMore: state.isLoadingMore,
+              errorMessage: state.errorMessage,
+              onRetry: viewModel.loadMoreMovies,
+            ),
           ),
         ],
       ),
