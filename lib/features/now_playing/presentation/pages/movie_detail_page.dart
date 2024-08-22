@@ -18,13 +18,6 @@ class MovieDetailPage extends ConsumerStatefulWidget {
 class _MovieDetailPageState extends ConsumerState<MovieDetailPage> {
   String imageKey = UniqueKey().toString();
 
-  void _reloadData(MovieDetailViewModel viewModel) {
-    setState(() {
-      imageKey = UniqueKey().toString();
-    });
-    viewModel.loadMovieDetail(widget.movie.id.toString());
-  }
-
   @override
   Widget build(BuildContext context) {
     final state =
@@ -46,7 +39,7 @@ class _MovieDetailPageState extends ConsumerState<MovieDetailPage> {
                 borderRadius: BorderRadius.circular(10.0),
                 child: Image.network(
                   'https://image.tmdb.org/t/p/w500${widget.movie.posterPath}',
-                  key: Key(imageKey), // Use the dynamic key here
+                  key: Key(state.imageKey),
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return const Icon(Icons.image_not_supported, size: 200);
@@ -188,7 +181,9 @@ class _MovieDetailPageState extends ConsumerState<MovieDetailPage> {
                     ),
                     const SizedBox(height: 8),
                     ElevatedButton(
-                      onPressed: () => _reloadData(viewModel),
+                      onPressed: () => viewModel.loadMovieDetail(
+                        widget.movie.id.toString(),
+                      ),
                       child: const Text('Tentar novamente'),
                     ),
                   ],

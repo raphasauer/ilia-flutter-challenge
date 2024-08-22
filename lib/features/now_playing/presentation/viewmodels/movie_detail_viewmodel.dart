@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ilia_flutter_challenge/features/now_playing/api/cache_service.dart';
 import 'package:ilia_flutter_challenge/features/now_playing/api/movie_service.dart';
@@ -13,22 +14,26 @@ class MovieDetailState {
   final bool isLoading;
   final MovieDetail? movieDetail;
   final String? errorMessage;
+  final String imageKey;
 
   MovieDetailState({
     required this.isLoading,
     this.movieDetail,
     this.errorMessage,
+    required this.imageKey,
   });
 
   MovieDetailState copyWith({
     bool? isLoading,
     MovieDetail? movieDetail,
     required String? errorMessage,
+    String? imageKey,
   }) {
     return MovieDetailState(
       isLoading: isLoading ?? this.isLoading,
       movieDetail: movieDetail ?? this.movieDetail,
       errorMessage: errorMessage,
+      imageKey: imageKey ?? this.imageKey,
     );
   }
 }
@@ -38,7 +43,10 @@ class MovieDetailViewModel extends StateNotifier<MovieDetailState> {
   final CacheService cacheService;
 
   MovieDetailViewModel(this.movieService, this.cacheService)
-      : super(MovieDetailState(isLoading: true, errorMessage: null));
+      : super(MovieDetailState(
+            isLoading: true,
+            errorMessage: null,
+            imageKey: UniqueKey().toString()));
 
   Future<void> loadMovieDetail(String movieId) async {
     const cacheDuration = Duration(hours: 24);
@@ -50,7 +58,7 @@ class MovieDetailViewModel extends StateNotifier<MovieDetailState> {
       state = state.copyWith(
         isLoading: false,
         movieDetail: cachedData.movieDetail,
-        errorMessage: null, 
+        errorMessage: null,
       );
       return;
     }
@@ -73,7 +81,8 @@ class MovieDetailViewModel extends StateNotifier<MovieDetailState> {
         state = state.copyWith(
           isLoading: false,
           movieDetail: movieDetail,
-          errorMessage: null, 
+          errorMessage: null,
+          imageKey: UniqueKey().toString(),
         );
       },
     );
